@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-struct ProductView: View {
+struct ProductRow: View {
     let product: Product
     var body: some View {
         HStack{
@@ -51,6 +51,6 @@ struct ProductView: View {
 }
 struct ProductRow_Previews: PreviewProvider {
   static var previews: some View {
-      ProductView(product: productSamples[0])
+      ProductRow(product: productSamples[0])
   }
 }

@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct Home: View {
+    let store: Store
     var body: some View {
         //        VStack {
         //            Image("apple").resizable()
@@ -16,17 +17,27 @@ struct Home: View {
         //                .clipped()
         //        }
         //        .padding()
-        VStack {
-            ProductView(product: productSamples[0])
-            ProductView(product: productSamples[1])
-            ProductView(product: productSamples[2])
+        //        VStack {
+        //            ProductView(product: productSamples[0])
+        //            ProductView(product: productSamples[1])
+        //            ProductView(product: productSamples[2])
+        //        }
+        NavigationView {
+            List(store.products){product in
+                NavigationLink {
+                    ProductDetailView(product: product)
+                } label: {
+                    ProductRow(product: product)
+                }
+            }
+            .navigationTitle("과일마트")
         }
     }
 }
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        Home()
+        Home(store: Store())
     }
 }
 
