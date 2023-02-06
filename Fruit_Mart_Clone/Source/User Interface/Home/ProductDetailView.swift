@@ -8,22 +8,27 @@
 import SwiftUI
 
 struct ProductDetailView: View {
+    @EnvironmentObject private var store: Store
     let product: Product
+    @State private var quantity = 1
+    @State private var showingAlert = false
+    @State private var showingPopup = false
     var body: some View {
-        Color.white.ignoresSafeArea(.all)
-            .overlay (
-                VStack(spacing:0){
-                    self.productImage
-                    self.orderView
-                }.edgesIgnoringSafeArea(.top)
-                    .background(.white)
-            )
-
+        VStack(spacing:0){
+            self.productImage
+            self.orderView
+        }
+        .popup(isPresendted: $showingPopup,style: .dimmed, content: {
+                OrderCompletedMessage()
+            })
+            .edgesIgnoringSafeArea(.top)
+            .background(.white)
     }
     var productImage: some View{
         GeometryReader{ _ in
-            Image(self.product.imageName).resizable()
-                .scaledToFill()
+//            Image(self.product.imageName).resizable()
+//                .scaledToFill()
+            ResizableImage(self.product.imageName)
         }
     }
     var orderView: some View{
@@ -41,6 +46,7 @@ struct ProductDetailView: View {
             .cornerRadius(16)
             .shadow(color: Color.black.opacity(0.2), radius: 10,x: 0,y: -5)
             .mask(Rectangle().padding(.top, -20))
+            .buttonStyle(PlainButtonStyle())
             //bottom에도 Shadow 효과가 나타나는 것을 방지한다.
             
         }
@@ -52,14 +58,7 @@ struct ProductDetailView: View {
                     .fontWeight(.medium)
                     .foregroundColor(Color.black)
                 Spacer()
-                Button{
-                    print("즐겨찾기 추가")
-                }label: {
-                    Image(systemName: "heart")
-                        .imageScale(.large)
-                        .foregroundColor(Color.peach)
-                        .frame(width: 32,height: 32)
-                }
+                FavoriteButton(product: product)
             }
             Text(split(product.description))
                 .foregroundColor(.secondaryText)
@@ -67,14 +66,18 @@ struct ProductDetailView: View {
         }
     }
     var priceInfo: some View{
-        (Text("$ ")+Text("\(self.product.price)").font(.largeTitle))
+        let price = quantity * product.price
+        return HStack{(Text("$ ")+Text("\(price)").font(.largeTitle))
             .fontWeight(.medium)
             .foregroundColor(.black)
-        //Spacer()
+            Spacer()
+            QuantitySelector(quantity: $quantity)
+        }
+        
     }
     var placeOrderButton: some View{
         Button{
-            print("order btn")
+            self.showingAlert = true
         }label: {
             Capsule()
                 .fill(Color.peach)
@@ -85,8 +88,20 @@ struct ProductDetailView: View {
                         .font(.system(size:20))
                         .fontWeight(.medium)
                 )
-        }.padding(.bottom,8)
+        }
+        .buttonStyle(ShrinkButtonStyle())
+        .padding(.bottom,8)
             .background(.white)
+            .alert(isPresented: $showingAlert){
+                confimAlert
+            }
+    }
+    var confimAlert: Alert{
+        Alert(title: Text("주문 확인"),
+              message: Text("\(product.name)을(를) \(quantity)개 구매하겠습니까?"),
+              primaryButton: .default(Text("확인"),action: placeOrder),
+              secondaryButton: .cancel(Text("취소").foregroundColor(.red))
+          )
     }
 }
 extension ProductDetailView{
@@ -98,6 +113,10 @@ extension ProductDetailView{
         let leftString = text[..<centerSpaceIdx].trimmingCharacters(in: .whitespaces)
         let rightString = text[centerSpaceIdx...].trimmingCharacters(in: .whitespaces)
         return String(leftString + "\n" + rightString)
+    }
+    func placeOrder(){
+        store.placeOrder(product: product, quantity: quantity)
+        self.showingPopup = true
     }
 }
 struct ProductDetailView_Previews: PreviewProvider {

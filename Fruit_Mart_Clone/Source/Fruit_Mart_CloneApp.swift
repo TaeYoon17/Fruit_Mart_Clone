@@ -11,7 +11,7 @@ import SwiftUI
 struct Fruit_Mart_CloneApp: App {
     var body: some Scene {
         WindowGroup {
-            Home(store: Store())
+            Home().environmentObject(Store())
         }
     }
 }

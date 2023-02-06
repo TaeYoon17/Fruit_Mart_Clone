@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct Home: View {
-    let store: Store
+    @EnvironmentObject private var store: Store
     var body: some View {
         //        VStack {
         //            Image("apple").resizable()
@@ -34,10 +34,11 @@ struct Home: View {
         }
     }
 }
+/// onTapGesture는 컨트롤보다 우선순위를 갖는다.
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        Home(store: Store())
+        Home().environmentObject(Store())
     }
 }
 

@@ -9,18 +9,21 @@ import Foundation
 
 struct Product{
     //let 대신 private(set)으로 get only를 만든다
-    var id:UUID{
-        return UUID()
-    }
+//    var id:UUID{
+//        return UUID()
+//    }
+    let id:UUID = UUID()
     let name: String
     let imageName: String
     let price: Int
     let description: String
-    var isFavorite: Bool = false
+    public var isFavorite: Bool = false
 }
 extension Product:Decodable{ }
 extension Product: Identifiable{}
-
+// 구조체는 모든 저장 프로퍼티가 Equatable을 준수하면 컴파일러가 자동으로 합성,
+// 따로 동등 연산자 구현할 필요 없음. but, class는 구현할 필요
+extension Product: Equatable{}
 let productSamples: [Product] = [
   Product(name: "나는야 무화과", imageName: "fig", price: 3100, description: "소화가 잘되고 변비에 좋은 달달한 국내산 무화과에요. 고기와 찰떡궁합!"),
   Product(name: "유기농 아보카도", imageName: "avocado", price: 2900, description: "미네랄도 풍부하고, 요리 장식과 소스로도 좋은 아보카도입니다"),

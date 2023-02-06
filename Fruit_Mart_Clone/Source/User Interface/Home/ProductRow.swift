@@ -17,6 +17,7 @@ struct ProductRow: View {
             .cornerRadius(6)
             .shadow(color: Color.primary.opacity(0.33), radius: 1,x:2,y:2)
             .padding(.vertical, 8)
+            .buttonStyle(PlainButtonStyle()) // 리스트 버튼 우선순위 처리
     }
     var productImage: some View{
         Image(product.imageName)
@@ -38,10 +39,7 @@ struct ProductRow: View {
         HStack(spacing: 0){
             Text("$").font(.footnote)+Text(String(product.price)).font(.headline)
             Spacer()
-            Image(systemName: "heart")
-                .imageScale(.large)
-                .foregroundColor(Color("peach"))
-                .frame(width: 32,height: 32)
+            FavoriteButton(product: product)
             Image(systemName: "cart")
                 .imageScale(.large)
                 .foregroundColor(Color("peach"))
@@ -50,7 +48,9 @@ struct ProductRow: View {
     }
 }
 struct ProductRow_Previews: PreviewProvider {
+    static let store = Store()
   static var previews: some View {
-      ProductRow(product: productSamples[0])
+      ProductRow(product: store.products[0])
+          .environmentObject(store)
   }
 }
